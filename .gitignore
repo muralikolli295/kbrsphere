@@ -1,0 +1,21 @@
+# Maven
+target/
+*.log
+
+# IDE - IntelliJ
+.idea/
+*.iml
+
+# VS Code
+.vscode/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Build artifacts
+*.jar
+*.war
+
+# Logs
+logs/
