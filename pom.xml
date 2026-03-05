@@ -19,6 +19,7 @@
 
     <modules>
         <module>user-management</module>
+        <module>property-management</module>
     </modules>
 
 </project>
