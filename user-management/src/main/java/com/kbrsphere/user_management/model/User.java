@@ -1,4 +1,4 @@
-package com.kbrsphere.user_management.dto;
+package com.kbrsphere.user_management.model;
 
 import jakarta.persistence.*;
 
