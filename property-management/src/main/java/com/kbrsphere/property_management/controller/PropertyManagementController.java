@@ -6,22 +6,28 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
-@RequestMapping("/properties")
+@RequestMapping("/property")
 public class PropertyManagementController {
 
     @Autowired
-    private PropertyManagementService managementService;
+    private PropertyManagementService propertyService;
 
-    @PostMapping("/registerProperty")
+    @PostMapping("/property")
     private String registerProperty(@RequestBody Property property){
-       return managementService.registerProperty(property);
+       return propertyService.registerProperty(property);
     }
 
-    @GetMapping("/propertyList")
+    @GetMapping("/properties")
     public List<Property> getProperties(){
-        return managementService.getProperties();
+        return propertyService.getProperties();
+    }
+
+    @GetMapping("/property/{propertyId}")
+    public Optional<Property> getProperty(@PathVariable String propertyId){
+        return propertyService.getProperty(propertyId);
     }
 
 }

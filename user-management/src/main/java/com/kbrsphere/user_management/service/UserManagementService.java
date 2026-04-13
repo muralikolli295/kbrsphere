@@ -1,19 +1,16 @@
 package com.kbrsphere.user_management.service;
 
 import com.kbrsphere.user_management.config.JwtUtil;
+import com.kbrsphere.user_management.dto.*;
+import com.kbrsphere.user_management.dto.Role;
+import com.kbrsphere.user_management.exception.UserException;
 import com.kbrsphere.user_management.model.User;
 import com.kbrsphere.user_management.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
-
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 
 @Service
 public class UserManagementService {
@@ -25,46 +22,70 @@ public class UserManagementService {
     @Autowired
     private JwtUtil jwtUtil;
 
-    public String encryptPassword(String password){
-       return passwordEncoder.encode(password);
-    }
-
-    public User saveUser(@RequestBody User user) {
-        String encryptedPassword = encryptPassword(user.getUserPassword());
-        user.setUserPassword(encryptedPassword);
-        return userRepository.save(user);
-    }
-
-    public Optional<User> getUserById(@RequestParam Long id){ return userRepository.findById(id); }
-
-    public List<User> getUsers(){ return userRepository.findAll(); }
-
-    public boolean verifyPassword(String rawPassword, String encodedPassword) { return passwordEncoder.matches(rawPassword, encodedPassword); }
-
-    public Map<String, Object> userLogin(String userEmail, String password) {
-        Map<String, Object> loginResponse = new HashMap<>();
-
-        User user = userRepository.findByUserEmail(userEmail);
-        if(user == null){
-            loginResponse.put("status","failed");
-            loginResponse.put("message","User doesn't exist, please register");
-            loginResponse.put("token","");
-            return loginResponse;
+    // REGISTER
+    public UserResponseDTO register(UserRequestDTO request) {
+        // Email already exists
+        if (userRepository.existsByUserEmail(request.getUserEmail())) {
+            throw new UserException("User already exists with this email, try with another");
         }
 
-        if (verifyPassword(password, user.getUserPassword())) {
-            String token = jwtUtil.generateToken(userEmail);
-            loginResponse.put("status", "success");
-            loginResponse.put("message","login successful");
-            loginResponse.put("token", token);
-
-            return loginResponse;
+        // Admin already exists
+        if (request.getRole() == Role.ADMIN && userRepository.existsByRole(Role.ADMIN)) {
+            throw new UserException("Admin already exists");
         }
 
-        loginResponse.put("status", "failed");
-        loginResponse.put("message","login failed, please enter valid password");
-        loginResponse.put("token", "");
+        // Create user
+        User user = new User();
+        user.setUserName(request.getUserName());
+        user.setUserEmail(request.getUserEmail());
+        user.setUserPassword(passwordEncoder.encode(request.getUserPassword()));
+        user.setPhoneNumber(request.getPhoneNumber());
+        user.setRole(request.getRole());
 
-        return loginResponse;
+        User saved = userRepository.save(user);
+
+        return mapToResponseDTO(saved);
+    }
+
+    // GET ALL USERS
+    public List<UserResponseDTO> getUsers() {
+        return userRepository.findAll()
+                .stream()
+                .map(this::mapToResponseDTO)
+                .toList();
+    }
+
+    // GET USER BY ID
+    public UserResponseDTO getUserById(String id) {
+        User user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
+
+        return mapToResponseDTO(user);
+    }
+
+    // LOGIN
+    public LoginResponseDTO login(LoginRequestDTO request) {
+        User user = userRepository.findByUserEmail(request.getUserEmail());
+        if (user == null) {
+            throw new UserException("User not found");
+        }
+
+        if (!passwordEncoder.matches(request.getPassword(), user.getUserPassword())) {
+            throw new UserException("Invalid password");
+        }
+
+        String token = jwtUtil.generateToken(user.getUserId(),user.getRole().name());
+
+        return new LoginResponseDTO(token);
+    }
+
+    // MAPPER
+    private UserResponseDTO mapToResponseDTO(User user) {
+        UserResponseDTO dto = new UserResponseDTO();
+        dto.setUserId(user.getUserId());
+        dto.setUserName(user.getUserName());
+        dto.setUserEmail(user.getUserEmail());
+        dto.setPhoneNumber(user.getPhoneNumber());
+        dto.setRole(user.getRole());
+        return dto;
     }
 }

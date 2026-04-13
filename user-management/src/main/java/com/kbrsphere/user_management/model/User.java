@@ -1,24 +1,27 @@
 package com.kbrsphere.user_management.model;
 
+import com.kbrsphere.user_management.dto.Role;
 import jakarta.persistence.*;
 
 @Entity
 @Table(name = "users")
 public class User {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long userId;
-    private String userName;
-    private String userEmail;
-    private String userPassword;
-    private Long phoneNumber;
-    private String role;
+        @Id
+        @GeneratedValue(strategy = GenerationType.UUID)
+        private String userId;
+        private String userName;
+        @Column(unique = true, nullable = false)
+        private String userEmail;
+        private String userPassword;
+        private Long phoneNumber;
+        @Enumerated(EnumType.STRING)
+        private Role role;
 
     public User() {
     }
 
-    public User(Long userId, String userName, String userEmail, String userPassword, Long phoneNumber, String role) {
+    public User(String userId, String userName, String userEmail, String userPassword, Long phoneNumber, Role role) {
         this.userId = userId;
         this.userName = userName;
         this.userEmail = userEmail;
@@ -27,11 +30,11 @@ public class User {
         this.role = role;
     }
 
-    public Long getUserId() {
+    public String getUserId() {
         return userId;
     }
 
-    public void setUserId(Long userId) {
+    public void setUserId(String userId) {
         this.userId = userId;
     }
 
@@ -51,11 +54,9 @@ public class User {
         this.userEmail = userEmail;
     }
 
-    public String getRole() {
-        return role;
-    }
+    public Role getRole() { return role; }
 
-    public void setRole(String role) {
+    public void setRole(Role role) {
         this.role = role;
     }
 
