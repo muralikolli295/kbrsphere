@@ -9,11 +9,15 @@ public class User {
 
         @Id
         @GeneratedValue(strategy = GenerationType.UUID)
+        @Column(name = "user_id")
         private String userId;
+        @Column(name = "user_name")
         private String userName;
-        @Column(unique = true, nullable = false)
+        @Column(unique = true,name = "user_email", nullable = false)
         private String userEmail;
+        @Column(name = "user_password")
         private String userPassword;
+        @Column(name = "phone_number")
         private Long phoneNumber;
         @Enumerated(EnumType.STRING)
         private Role role;

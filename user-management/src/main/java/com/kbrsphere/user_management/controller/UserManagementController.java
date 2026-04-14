@@ -1,9 +1,8 @@
 package com.kbrsphere.user_management.controller;
 
-import com.kbrsphere.user_management.dto.ApiResponse;
-import com.kbrsphere.user_management.dto.UserRequestDTO;
-import com.kbrsphere.user_management.dto.UserResponseDTO;
+import com.kbrsphere.user_management.dto.*;
 import com.kbrsphere.user_management.service.UserManagementService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -20,9 +19,9 @@ public class UserManagementController {
 
     // REGISTER
     @PostMapping
-    public ResponseEntity<ApiResponse<UserResponseDTO>> register(@RequestBody UserRequestDTO request) {
+    public ResponseEntity<ApiResponse<UserResponseDTO>> register(@Valid @RequestBody UserRequestDTO request) {
         return ResponseEntity.status(201)
-                .body(new ApiResponse<>("success", "User registered successfully", service.register(request)));
+                .body(new ApiResponse<>(ApiStatus.SUCCESS, "User registered successfully", service.register(request)));
     }
 
     // GET ALL USERS (ADMIN)
@@ -30,7 +29,7 @@ public class UserManagementController {
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResponse<List<UserResponseDTO>>> getUsers() {
         return ResponseEntity.ok(
-                new ApiResponse<>("success", "Users fetched successfully", service.getUsers()));
+                new ApiResponse<>(ApiStatus.SUCCESS, "Users fetched successfully", service.getUsers()));
     }
 
     // GET USER BY ID (ADMIN OR SELF)
@@ -38,7 +37,22 @@ public class UserManagementController {
     @PreAuthorize("#id == authentication.name or hasRole('ADMIN')")
     public ResponseEntity<ApiResponse<UserResponseDTO>> getUser(@PathVariable String id) {
         return ResponseEntity.ok(
-                new ApiResponse<>("success", "User fetched successfully", service.getUserById(id))
-        );
+                new ApiResponse<>(ApiStatus.SUCCESS, "User fetched successfully", service.getUserById(id)));
+    }
+
+    @PatchMapping("/{id}")
+    @PreAuthorize("#id == authentication.name or hasRole('ADMIN')")
+    public ResponseEntity<ApiResponse<UserResponseDTO>> updateDetails(@PathVariable String id, @RequestBody UpdateUserDTO request) {
+        return ResponseEntity.ok(
+                new ApiResponse<>(ApiStatus.SUCCESS,"Details updated successfully",service.updateUserDetails(id, request)));
+    }
+
+    @PatchMapping("/{id}/password")
+    @PreAuthorize("#id == authentication.name")
+    public ResponseEntity<ApiResponse<String>> updatePassword(@PathVariable String id,@RequestBody UpdatePasswordDTO request) {
+        service.updatePassword(id, request);
+
+        return ResponseEntity.ok(
+                new ApiResponse<>(ApiStatus.SUCCESS,"Password updated successfully",null));
     }
 }

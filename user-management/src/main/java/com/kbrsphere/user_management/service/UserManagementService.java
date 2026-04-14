@@ -34,17 +34,9 @@ public class UserManagementService {
             throw new UserException("Admin already exists");
         }
 
-        // Create user
-        User user = new User();
-        user.setUserName(request.getUserName());
-        user.setUserEmail(request.getUserEmail());
-        user.setUserPassword(passwordEncoder.encode(request.getUserPassword()));
-        user.setPhoneNumber(request.getPhoneNumber());
-        user.setRole(request.getRole());
-
-        User saved = userRepository.save(user);
-
-        return mapToResponseDTO(saved);
+        // Create & Save User
+        User registeredUser = userRepository.save(new User(null,request.getUserName(),request.getUserEmail(),passwordEncoder.encode(request.getUserPassword()),request.getPhoneNumber(),request.getRole()));
+        return mapToResponseDTO(registeredUser);
     }
 
     // GET ALL USERS
@@ -57,7 +49,7 @@ public class UserManagementService {
 
     // GET USER BY ID
     public UserResponseDTO getUserById(String id) {
-        User user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
+        User user = userRepository.findById(id).orElseThrow(() -> new UserException("User not found"));
 
         return mapToResponseDTO(user);
     }
@@ -80,12 +72,42 @@ public class UserManagementService {
 
     // MAPPER
     private UserResponseDTO mapToResponseDTO(User user) {
-        UserResponseDTO dto = new UserResponseDTO();
-        dto.setUserId(user.getUserId());
-        dto.setUserName(user.getUserName());
-        dto.setUserEmail(user.getUserEmail());
-        dto.setPhoneNumber(user.getPhoneNumber());
-        dto.setRole(user.getRole());
-        return dto;
+        return new UserResponseDTO(user.getUserId(),user.getUserName(),user.getUserEmail(),user.getPhoneNumber(),user.getRole());
+    }
+
+    public UserResponseDTO updateUserDetails(String id, UpdateUserDTO request) {
+        User user = userRepository.findById(id).orElseThrow(() -> new UserException("User not found"));
+
+        // Update only allowed fields
+        if (request.getUserName() != null) {
+            user.setUserName(request.getUserName());
+        }
+
+        if (request.getPhoneNumber() != null) {
+            user.setPhoneNumber(request.getPhoneNumber());
+        }
+
+        User updatedUser = userRepository.save(user);
+
+        return mapToResponseDTO(updatedUser);
+    }
+
+    public void updatePassword(String id, UpdatePasswordDTO request) {
+        User user = userRepository.findById(id).orElseThrow(() -> new UserException("User not found"));
+
+        // Validate old password
+        if (!passwordEncoder.matches(request.getOldPassword(), user.getUserPassword())) {
+            throw new UserException("Old password is incorrect");
+        }
+
+        // Prevent same password reuse
+        if (passwordEncoder.matches(request.getNewPassword(), user.getUserPassword())) {
+            throw new UserException("New password cannot be same as old password");
+        }
+
+        // Update password
+        user.setUserPassword(passwordEncoder.encode(request.getNewPassword()));
+
+        userRepository.save(user);
     }
 }

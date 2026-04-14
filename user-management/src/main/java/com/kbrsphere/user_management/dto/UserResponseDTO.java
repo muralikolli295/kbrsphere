@@ -8,6 +8,17 @@ public class UserResponseDTO {
     private Long phoneNumber;
     private Role role;
 
+    public UserResponseDTO() {
+    }
+
+    public UserResponseDTO(String userId, String userName, String userEmail, Long phoneNumber, Role role) {
+        this.userId = userId;
+        this.userName = userName;
+        this.userEmail = userEmail;
+        this.phoneNumber = phoneNumber;
+        this.role = role;
+    }
+
     public String getUserId() {
         return userId;
     }

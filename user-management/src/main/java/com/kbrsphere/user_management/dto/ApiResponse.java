@@ -2,14 +2,14 @@ package com.kbrsphere.user_management.dto;
 
 public class ApiResponse<T> {
 
-    private String status;
+    private ApiStatus status;
     private String message;
     private T data;
 
     public ApiResponse() {
     }
 
-    public ApiResponse(String status, String message, T data) {
+    public ApiResponse(ApiStatus status, String message, T data) {
         this.status = status;
         this.message = message;
         this.data = data;
@@ -23,11 +23,11 @@ public class ApiResponse<T> {
         this.message = message;
     }
 
-    public String getStatus() {
+    public ApiStatus getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(ApiStatus status) {
         this.status = status;
     }
 
