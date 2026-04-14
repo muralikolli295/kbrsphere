@@ -1,8 +1,10 @@
 package com.kbrsphere.property_management.model;
 
+import com.kbrsphere.property_management.dto.PropertyStatus;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Document(collection = "properties")
@@ -16,16 +18,13 @@ public class Property {
     private String propertyType;
     private List<String> amenities;
 
-    public Property() {
-    }
+    private String ownerId;
+    private PropertyStatus status;
 
-    public Property(String propertyId, String propertyTitle, String city, Double price, String propertyType, List<String> eminities) {
-        this.propertyId = propertyId;
-        this.propertyTitle = propertyTitle;
-        this.city = city;
-        this.price = price;
-        this.propertyType = propertyType;
-        this.amenities = eminities;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
+
+    public Property() {
     }
 
     public String getPropertyId() {
@@ -44,6 +43,22 @@ public class Property {
         this.propertyTitle = propertyTitle;
     }
 
+    public String getCity() {
+        return city;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
+    }
+
+    public String getPropertyType() {
+        return propertyType;
+    }
+
+    public void setPropertyType(String propertyType) {
+        this.propertyType = propertyType;
+    }
+
     public Double getPrice() {
         return price;
     }
@@ -60,19 +75,35 @@ public class Property {
         this.amenities = amenities;
     }
 
-    public String getCity() {
-        return city;
+    public String getOwnerId() {
+        return ownerId;
     }
 
-    public void setCity(String city) {
-        this.city = city;
+    public void setOwnerId(String ownerId) {
+        this.ownerId = ownerId;
     }
 
-    public String getPropertyType() {
-        return propertyType;
+    public PropertyStatus getStatus() {
+        return status;
     }
 
-    public void setPropertyType(String propertyType) {
-        this.propertyType = propertyType;
+    public void setStatus(PropertyStatus status) {
+        this.status = status;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
     }
 }

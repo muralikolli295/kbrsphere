@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class PropertyManagementService {
@@ -20,5 +21,9 @@ public class PropertyManagementService {
 
     public List<Property> getProperties(){
         return propertyRepository.findAll();
+    }
+
+    public Optional<Property> getProperty(String propertyId) {
+        return propertyRepository.findById(propertyId);
     }
 }
