@@ -5,10 +5,10 @@ import jakarta.validation.constraints.Size;
 
 public class UpdatePasswordDTO {
 
-    @NotBlank(message = "old password is required")
+    @NotBlank
     private String oldPassword;
 
-    @NotBlank(message = "new password is required")
+    @NotBlank
     @Size(min = 6, message = "new password must be at least 6 characters")
     private String newPassword;
 

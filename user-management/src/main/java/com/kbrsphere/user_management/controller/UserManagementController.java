@@ -40,6 +40,7 @@ public class UserManagementController {
                 new ApiResponse<>(ApiStatus.SUCCESS, "User fetched successfully", service.getUserById(id)));
     }
 
+    // UPDATE USER DETAILS BY ID (ADMIN OR SELF)
     @PatchMapping("/{id}")
     @PreAuthorize("#id == authentication.name or hasRole('ADMIN')")
     public ResponseEntity<ApiResponse<UserResponseDTO>> updateDetails(@PathVariable String id, @RequestBody UpdateUserDTO request) {
@@ -47,12 +48,23 @@ public class UserManagementController {
                 new ApiResponse<>(ApiStatus.SUCCESS,"Details updated successfully",service.updateUserDetails(id, request)));
     }
 
-    @PatchMapping("/{id}/password")
+    // UPDATE USER PASSWORD BY ID
+    @PatchMapping("/updatePassword/{id}")
     @PreAuthorize("#id == authentication.name")
-    public ResponseEntity<ApiResponse<String>> updatePassword(@PathVariable String id,@RequestBody UpdatePasswordDTO request) {
+    public ResponseEntity<ApiResponse<String>> updatePassword(@Valid @PathVariable String id, @Valid @RequestBody UpdatePasswordDTO request) {
         service.updatePassword(id, request);
 
         return ResponseEntity.ok(
                 new ApiResponse<>(ApiStatus.SUCCESS,"Password updated successfully",null));
+    }
+
+    // DELETE USER ACCOUNT BY ID
+    @DeleteMapping("/{id}")
+    @PreAuthorize("#id == authentication.name or hasRole('ADMIN')")
+    public ResponseEntity<ApiResponse<String>> deleteUserAccount(@PathVariable String id){
+        service.deleteAccount(id);
+
+        return ResponseEntity.ok(
+                new ApiResponse<>(ApiStatus.SUCCESS,"Account deleted successfully",null));
     }
 }

@@ -110,4 +110,9 @@ public class UserManagementService {
 
         userRepository.save(user);
     }
+
+    public void deleteAccount(String id) {
+          User user = userRepository.findById(id).orElseThrow(() -> new UserException("User not found"));
+          userRepository.delete(user);
+    }
 }
