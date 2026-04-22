@@ -1,9 +1,10 @@
 package com.kbrsphere.user_management.controller;
 
+import com.kbrsphere.shared.enums.ApiStatus;
+import com.kbrsphere.shared.response.ApiResponse;
 import com.kbrsphere.user_management.dto.*;
 import com.kbrsphere.user_management.service.UserManagementService;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -14,8 +15,11 @@ import java.util.List;
 @RequestMapping("/users")
 public class UserManagementController {
 
-    @Autowired
-    private UserManagementService service;
+    private final UserManagementService service;
+
+    public UserManagementController(UserManagementService service) {
+        this.service = service;
+    }
 
     // REGISTER
     @PostMapping
@@ -66,5 +70,13 @@ public class UserManagementController {
 
         return ResponseEntity.ok(
                 new ApiResponse<>(ApiStatus.SUCCESS,"Account deleted successfully",null));
+    }
+
+    // GET ALL OWNERS/CUSTOMERS BY ROLE
+    @GetMapping("/role/{role}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<ApiResponse<List<UserResponseDTO>>> getUsersByRole(@PathVariable String role){
+        return ResponseEntity.ok(
+                new ApiResponse<>(ApiStatus.SUCCESS,"Users fetched successfully", service.getUsersByRole(role)));
     }
 }
