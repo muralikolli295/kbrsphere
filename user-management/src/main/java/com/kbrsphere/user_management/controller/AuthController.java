@@ -4,7 +4,8 @@ import com.kbrsphere.shared.enums.ApiStatus;
 import com.kbrsphere.shared.response.ApiResponse;
 import com.kbrsphere.user_management.dto.LoginRequestDTO;
 import com.kbrsphere.user_management.dto.LoginResponseDTO;
-import com.kbrsphere.user_management.service.UserManagementServiceImpl;
+import com.kbrsphere.user_management.service.UserManagementService;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -12,9 +13,9 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/auth")
 public class AuthController {
 
-    private final UserManagementServiceImpl service;
+    private final UserManagementService service;
 
-    public AuthController(UserManagementServiceImpl service) {
+    public AuthController(UserManagementService service) {
         this.service = service;
     }
 
