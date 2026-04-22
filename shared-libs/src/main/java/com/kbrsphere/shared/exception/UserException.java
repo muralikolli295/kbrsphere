@@ -1,4 +1,4 @@
-package com.kbrsphere.user_management.exception;
+package com.kbrsphere.shared.exception;
 
 public class UserException extends RuntimeException {
 
