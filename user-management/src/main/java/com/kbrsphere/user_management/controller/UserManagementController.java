@@ -5,6 +5,7 @@ import com.kbrsphere.shared.response.ApiResponse;
 import com.kbrsphere.user_management.dto.*;
 import com.kbrsphere.user_management.service.UserManagementService;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -13,13 +14,10 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/users")
+@RequiredArgsConstructor
 public class UserManagementController {
 
     private final UserManagementService service;
-
-    public UserManagementController(UserManagementService service) {
-        this.service = service;
-    }
 
     // REGISTER
     @PostMapping

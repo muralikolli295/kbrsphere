@@ -6,18 +6,16 @@ import com.kbrsphere.user_management.dto.LoginRequestDTO;
 import com.kbrsphere.user_management.dto.LoginResponseDTO;
 import com.kbrsphere.user_management.service.UserManagementService;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/auth")
+@RequiredArgsConstructor
 public class AuthController {
 
     private final UserManagementService service;
-
-    public AuthController(UserManagementService service) {
-        this.service = service;
-    }
 
     // LOGIN
     @PostMapping("/login")

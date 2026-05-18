@@ -6,23 +6,19 @@ import com.kbrsphere.user_management.dto.Role;
 import com.kbrsphere.shared.exception.UserException;
 import com.kbrsphere.user_management.model.User;
 import com.kbrsphere.user_management.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class UserManagementServiceImpl implements UserManagementService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
-
-    public UserManagementServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder, JwtUtil jwtUtil) {
-        this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder;
-        this.jwtUtil = jwtUtil;
-    }
 
     public UserResponseDTO register(UserRequestDTO request) {
         // Email already exists
@@ -64,12 +60,11 @@ public class UserManagementServiceImpl implements UserManagementService {
         }
 
         String token = jwtUtil.generateToken(user.getUserId(),user.getRole().name());
-
-        return new LoginResponseDTO(token);
+        return LoginResponseDTO.builder().token(token).build();
     }
 
     private UserResponseDTO mapToResponseDTO(User user) {
-        return new UserResponseDTO(user.getUserId(),user.getUserName(),user.getUserEmail(),user.getPhoneNumber(),user.getRole());
+        return UserResponseDTO.builder().userId(user.getUserId()).userName(user.getUserName()).userEmail(user.getUserEmail()).phoneNumber(user.getPhoneNumber()).role(user.getRole()).build();
     }
 
     public UserResponseDTO updateUserDetails(String id, UpdateUserDTO request) {

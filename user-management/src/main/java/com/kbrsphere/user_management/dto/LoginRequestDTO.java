@@ -1,7 +1,15 @@
 package com.kbrsphere.user_management.dto;
 
 import jakarta.validation.constraints.NotBlank;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
+@Setter
+@Getter
+@AllArgsConstructor
+@NoArgsConstructor
 public class LoginRequestDTO {
 
     @NotBlank(message = "userEmail is required")
@@ -9,20 +17,4 @@ public class LoginRequestDTO {
 
     @NotBlank(message = "password is required")
     private String password;
-
-    public String getUserEmail() {
-        return userEmail;
-    }
-
-    public void setUserEmail(String userEmail) {
-        this.userEmail = userEmail;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
 }
