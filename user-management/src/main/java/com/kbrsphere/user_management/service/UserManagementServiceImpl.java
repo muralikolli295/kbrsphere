@@ -6,19 +6,23 @@ import com.kbrsphere.user_management.dto.Role;
 import com.kbrsphere.shared.exception.UserException;
 import com.kbrsphere.user_management.model.User;
 import com.kbrsphere.user_management.repository.UserRepository;
-import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
-@RequiredArgsConstructor
 public class UserManagementServiceImpl implements UserManagementService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
+
+    public UserManagementServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder, JwtUtil jwtUtil) {
+        this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
+        this.jwtUtil = jwtUtil;
+    }
 
     public UserResponseDTO register(UserRequestDTO request) {
         // Email already exists
@@ -32,15 +36,12 @@ public class UserManagementServiceImpl implements UserManagementService {
         }
 
         // Create & Save User
-        User registeredUser = userRepository.save(new User(null,request.getUserName(),request.getUserEmail(),passwordEncoder.encode(request.getUserPassword()),request.getPhoneNumber(),request.getRole()));
+        User registeredUser = userRepository.save(new User(null, request.getUserName(), request.getUserEmail(), passwordEncoder.encode(request.getUserPassword()), request.getPhoneNumber(), request.getRole()));
         return mapToResponseDTO(registeredUser);
     }
 
     public List<UserResponseDTO> getUsers() {
-        return userRepository.findAll()
-                .stream()
-                .map(this::mapToResponseDTO)
-                .toList();
+        return userRepository.findAll().stream().map(this::mapToResponseDTO).toList();
     }
 
     public UserResponseDTO getUserById(String id) {
@@ -59,12 +60,12 @@ public class UserManagementServiceImpl implements UserManagementService {
             throw new UserException("Invalid password");
         }
 
-        String token = jwtUtil.generateToken(user.getUserId(),user.getRole().name());
-        return LoginResponseDTO.builder().token(token).build();
+        String token = jwtUtil.generateToken(user.getUserId(), user.getRole().name());
+        return new LoginResponseDTO(token);
     }
 
     private UserResponseDTO mapToResponseDTO(User user) {
-        return UserResponseDTO.builder().userId(user.getUserId()).userName(user.getUserName()).userEmail(user.getUserEmail()).phoneNumber(user.getPhoneNumber()).role(user.getRole()).build();
+        return new UserResponseDTO(user.getUserId(), user.getUserName(),user.getUserEmail(), user.getPhoneNumber(),user.getRole());
     }
 
     public UserResponseDTO updateUserDetails(String id, UpdateUserDTO request) {
@@ -104,8 +105,8 @@ public class UserManagementServiceImpl implements UserManagementService {
     }
 
     public void deleteAccount(String id) {
-          User user = userRepository.findById(id).orElseThrow(() -> new UserException("User not found"));
-          userRepository.delete(user);
+        User user = userRepository.findById(id).orElseThrow(() -> new UserException("User not found"));
+        userRepository.delete(user);
     }
 
     @Override

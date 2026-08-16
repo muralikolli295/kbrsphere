@@ -1,16 +1,10 @@
-package com.kbrsphere.property_management.model;
-
-import com.kbrsphere.property_management.dto.PropertyStatus;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
+package com.kbrsphere.property_management.dto;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
-@Document(collection = "properties")
-public class Property {
+public class PropertyResponseDTO {
 
-    @Id
     private String propertyId;
     private String propertyTitle;
     private String city;
@@ -22,10 +16,10 @@ public class Property {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
-    public Property() {
+    public PropertyResponseDTO() {
     }
 
-    public Property(String propertyId, String propertyTitle, String city, Double price, String propertyType, List<String> amenities, Long ownerId, PropertyStatus status, LocalDateTime createdAt, LocalDateTime updatedAt) {
+    public PropertyResponseDTO(String propertyId, String propertyTitle, String city, Double price, String propertyType, List<String> amenities, Long ownerId, PropertyStatus status, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.propertyId = propertyId;
         this.propertyTitle = propertyTitle;
         this.city = city;

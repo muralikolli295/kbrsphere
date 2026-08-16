@@ -1,29 +1,27 @@
 package com.kbrsphere.property_management.service;
 
-import com.kbrsphere.property_management.model.Property;
-import com.kbrsphere.property_management.repository.PropertyRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import com.kbrsphere.property_management.dto.PropertyRequestDTO;
+import com.kbrsphere.property_management.dto.PropertyResponseDTO;
+import com.kbrsphere.property_management.dto.PropertyStatus;
+import com.kbrsphere.property_management.dto.StatusUpdateRequestDTO;
 
 import java.util.List;
-import java.util.Optional;
 
-@Service
-public class PropertyManagementService {
+public interface PropertyManagementService {
 
-    @Autowired
-    private PropertyRepository propertyRepository;
+    PropertyResponseDTO registerProperty(PropertyRequestDTO request);
 
-    public String registerProperty(Property property){
-        property.setPropertyId("PROP-" + System.currentTimeMillis());
-        return String.valueOf(propertyRepository.save(property));
-    }
+    List<PropertyResponseDTO> getProperties();
 
-    public List<Property> getProperties(){
-        return propertyRepository.findAll();
-    }
+    PropertyResponseDTO getProperty(String propertyId);
 
-    public Optional<Property> getProperty(String propertyId) {
-        return propertyRepository.findById(propertyId);
-    }
+    PropertyResponseDTO updateProperty(String propertyId, PropertyRequestDTO request);
+
+    void deleteProperty(String propertyId);
+
+    List<PropertyResponseDTO> getMyProperties();
+
+    PropertyResponseDTO updatePropertyStatus(String propertyId, StatusUpdateRequestDTO request);
+
+    List<PropertyResponseDTO> searchProperties(String city, String propertyType, Double minPrice, Double maxPrice, PropertyStatus status);
 }
