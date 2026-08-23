@@ -25,7 +25,13 @@ public class User {
     public User() {
     }
 
-    public User(Object o, String userName, String userEmail, String encode, Long phoneNumber, Role role) {
+    public User(String userId, String userName, String userEmail, String userPassword, Long phoneNumber, Role role) {
+        this.userId = userId;
+        this.userName = userName;
+        this.userEmail = userEmail;
+        this.userPassword = userPassword;
+        this.phoneNumber = phoneNumber;
+        this.role = role;
     }
 
     public String getUserId() {

@@ -1,9 +1,8 @@
 package com.kbrsphere.user_management.service;
 
+import com.kbrsphere.shared.exception.UserException;
 import com.kbrsphere.user_management.config.JwtUtil;
 import com.kbrsphere.user_management.dto.*;
-import com.kbrsphere.user_management.dto.Role;
-import com.kbrsphere.shared.exception.UserException;
 import com.kbrsphere.user_management.model.User;
 import com.kbrsphere.user_management.repository.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -56,7 +55,7 @@ public class UserManagementServiceImpl implements UserManagementService {
             throw new UserException("User not found");
         }
 
-        if (!passwordEncoder.matches(request.getPassword(), user.getUserPassword())) {
+        if (!passwordEncoder.matches(request.getUserPassword(), user.getUserPassword())) {
             throw new UserException("Invalid password");
         }
 
@@ -65,13 +64,16 @@ public class UserManagementServiceImpl implements UserManagementService {
     }
 
     private UserResponseDTO mapToResponseDTO(User user) {
-        return new UserResponseDTO(user.getUserId(), user.getUserName(),user.getUserEmail(), user.getPhoneNumber(),user.getRole());
+        return new UserResponseDTO(user.getUserId(), user.getUserName(), user.getUserEmail(), user.getPhoneNumber(), user.getRole());
     }
 
     public UserResponseDTO updateUserDetails(String id, UpdateUserDTO request) {
         User user = userRepository.findById(id).orElseThrow(() -> new UserException("User not found"));
 
-        // Update only allowed fields
+        if (request.getUserName() != null && request.getUserName().isBlank()) {
+            throw new UserException("userName cannot be empty");
+        }
+
         if (request.getUserName() != null) {
             user.setUserName(request.getUserName());
         }
@@ -106,6 +108,9 @@ public class UserManagementServiceImpl implements UserManagementService {
 
     public void deleteAccount(String id) {
         User user = userRepository.findById(id).orElseThrow(() -> new UserException("User not found"));
+        if (user.getRole() == Role.ADMIN) {
+            throw new UserException("Admin account cannot be deleted");
+        }
         userRepository.delete(user);
     }
 

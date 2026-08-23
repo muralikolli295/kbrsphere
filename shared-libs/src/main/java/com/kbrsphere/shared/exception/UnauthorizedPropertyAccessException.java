@@ -1,4 +1,4 @@
-package com.kbrsphere.property_management.exception;
+package com.kbrsphere.shared.exception;
 
 public class UnauthorizedPropertyAccessException extends RuntimeException {
 

@@ -8,11 +8,11 @@ public class LoginRequestDTO {
     private String userEmail;
 
     @NotBlank(message = "password is required")
-    private String password;
+    private String userPassword;
 
     public LoginRequestDTO(String userEmail, String password) {
         this.userEmail = userEmail;
-        this.password = password;
+        this.userPassword = password;
     }
 
     public String getUserEmail() {
@@ -23,11 +23,11 @@ public class LoginRequestDTO {
         this.userEmail = userEmail;
     }
 
-    public String getPassword() {
-        return password;
+    public String getUserPassword() {
+        return userPassword;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
+    public void setUserPassword(String userPassword) {
+        this.userPassword = userPassword;
     }
 }

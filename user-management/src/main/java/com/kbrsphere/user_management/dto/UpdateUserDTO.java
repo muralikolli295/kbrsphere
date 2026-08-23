@@ -1,12 +1,12 @@
 package com.kbrsphere.user_management.dto;
 
-import jakarta.validation.constraints.NotNull;
-
 public class UpdateUserDTO {
 
-    @NotNull()
     private String userName;
     private Long phoneNumber;
+
+    public UpdateUserDTO() {
+    }
 
     public UpdateUserDTO(String userName, Long phoneNumber) {
         this.userName = userName;
