@@ -17,7 +17,7 @@ public class Property {
     private Double price;
     private String propertyType;
     private List<String> amenities;
-    private Long ownerId;
+    private String ownerId;
     private PropertyStatus status;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
@@ -25,7 +25,7 @@ public class Property {
     public Property() {
     }
 
-    public Property(String propertyId, String propertyTitle, String city, Double price, String propertyType, List<String> amenities, Long ownerId, PropertyStatus status, LocalDateTime createdAt, LocalDateTime updatedAt) {
+    public Property(String propertyId, String propertyTitle, String city, Double price, String propertyType, List<String> amenities, String ownerId, PropertyStatus status, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.propertyId = propertyId;
         this.propertyTitle = propertyTitle;
         this.city = city;
@@ -86,11 +86,11 @@ public class Property {
         this.amenities = amenities;
     }
 
-    public Long getOwnerId() {
+    public String getOwnerId() {
         return ownerId;
     }
 
-    public void setOwnerId(Long ownerId) {
+    public void setOwnerId(String ownerId) {
         this.ownerId = ownerId;
     }
 

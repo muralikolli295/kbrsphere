@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface PropertyRepository extends MongoRepository<Property, String> {
 
-     List<Property> findByOwnerId(Long ownerId);
+     List<Property> findByOwnerId(String ownerId);
 
      List<Property> findByCityIgnoreCase(String city);
 
