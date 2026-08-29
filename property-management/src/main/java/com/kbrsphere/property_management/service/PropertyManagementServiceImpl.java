@@ -1,13 +1,10 @@
 package com.kbrsphere.property_management.service;
 
-import com.kbrsphere.property_management.dto.PropertyRequestDTO;
-import com.kbrsphere.property_management.dto.PropertyResponseDTO;
-import com.kbrsphere.property_management.dto.PropertyStatus;
-import com.kbrsphere.property_management.dto.StatusUpdateRequestDTO;
-import com.kbrsphere.shared.exception.PropertyNotFoundException;
-import com.kbrsphere.shared.exception.UnauthorizedPropertyAccessException;
+import com.kbrsphere.property_management.dto.*;
 import com.kbrsphere.property_management.model.Property;
 import com.kbrsphere.property_management.repository.PropertyRepository;
+import com.kbrsphere.shared.exception.PropertyNotFoundException;
+import com.kbrsphere.shared.exception.UnauthorizedPropertyAccessException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -25,14 +22,14 @@ public class PropertyManagementServiceImpl implements PropertyManagementService 
         this.propertyRepository = propertyRepository;
     }
 
-    private Long getCurrentUserId() {
+    private String getCurrentUserId() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        return Long.valueOf(authentication.getName());
+        return authentication.getName();
     }
 
     @Override
     public PropertyResponseDTO registerProperty(PropertyRequestDTO request) {
-        Long ownerId = getCurrentUserId();
+        String ownerId = getCurrentUserId();
 
         Property property = new Property();
         property.setPropertyTitle(request.getPropertyTitle());
@@ -64,8 +61,8 @@ public class PropertyManagementServiceImpl implements PropertyManagementService 
     }
 
     @Override
-    public PropertyResponseDTO updateProperty(String propertyId, PropertyRequestDTO request) {
-        Long currentUserId = getCurrentUserId();
+    public PropertyResponseDTO updateProperty(String propertyId, PropertyPatchRequestDTO request) {
+        String currentUserId = getCurrentUserId();
 
         Property property = propertyRepository.findById(propertyId).orElseThrow(() -> new PropertyNotFoundException("Property not found with ID: " + propertyId));
 
@@ -73,11 +70,25 @@ public class PropertyManagementServiceImpl implements PropertyManagementService 
             throw new UnauthorizedPropertyAccessException("You are not authorized to update this property");
         }
 
-        property.setPropertyTitle(request.getPropertyTitle());
-        property.setCity(request.getCity());
-        property.setPrice(request.getPrice());
-        property.setPropertyType(request.getPropertyType());
-        property.setAmenities(request.getAmenities());
+        if (request.getPropertyTitle() == null && request.getCity() == null && request.getPrice() == null && request.getPropertyType() == null && request.getAmenities() == null) {
+            throw new IllegalArgumentException("At least one property field must be provided for update");
+        }
+
+        if (request.getPropertyTitle() != null) {
+            property.setPropertyTitle(request.getPropertyTitle());
+        }
+        if (request.getCity() != null) {
+            property.setCity(request.getCity());
+        }
+        if (request.getPrice() != null) {
+            property.setPrice(request.getPrice());
+        }
+        if (request.getPropertyType() != null) {
+            property.setPropertyType(request.getPropertyType());
+        }
+        if (request.getAmenities() != null) {
+            property.setAmenities(request.getAmenities());
+        }
         property.setUpdatedAt(LocalDateTime.now());
 
         Property updatedProperty = propertyRepository.save(property);
@@ -87,7 +98,7 @@ public class PropertyManagementServiceImpl implements PropertyManagementService 
 
     @Override
     public void deleteProperty(String propertyId) {
-        Long currentUserId = getCurrentUserId();
+        String currentUserId = getCurrentUserId();
 
         Property property = propertyRepository.findById(propertyId).orElseThrow(() -> new PropertyNotFoundException("Property not found with ID: " + propertyId));
         if (!property.getOwnerId().equals(currentUserId)) {
@@ -99,14 +110,14 @@ public class PropertyManagementServiceImpl implements PropertyManagementService 
 
     @Override
     public List<PropertyResponseDTO> getMyProperties() {
-        Long currentUserId = getCurrentUserId();
+        String currentUserId = getCurrentUserId();
 
         return propertyRepository.findByOwnerId(currentUserId).stream().map(this::convertToResponse).collect(Collectors.toList());
     }
 
     @Override
     public PropertyResponseDTO updatePropertyStatus(String propertyId, StatusUpdateRequestDTO request) {
-        Long currentUserId = getCurrentUserId();
+        String currentUserId = getCurrentUserId();
         Property property = propertyRepository.findById(propertyId).orElseThrow(() -> new PropertyNotFoundException("Property not found with ID: " + propertyId));
 
         if (!property.getOwnerId().equals(currentUserId)) {

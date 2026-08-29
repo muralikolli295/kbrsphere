@@ -1,9 +1,6 @@
 package com.kbrsphere.property_management.service;
 
-import com.kbrsphere.property_management.dto.PropertyRequestDTO;
-import com.kbrsphere.property_management.dto.PropertyResponseDTO;
-import com.kbrsphere.property_management.dto.PropertyStatus;
-import com.kbrsphere.property_management.dto.StatusUpdateRequestDTO;
+import com.kbrsphere.property_management.dto.*;
 
 import java.util.List;
 
@@ -15,7 +12,7 @@ public interface PropertyManagementService {
 
     PropertyResponseDTO getProperty(String propertyId);
 
-    PropertyResponseDTO updateProperty(String propertyId, PropertyRequestDTO request);
+    PropertyResponseDTO updateProperty(String propertyId, PropertyPatchRequestDTO request);
 
     void deleteProperty(String propertyId);
 
