@@ -2,6 +2,7 @@ package com.kbrsphere.property_management.model;
 
 import com.kbrsphere.property_management.dto.PropertyStatus;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDateTime;
@@ -13,11 +14,16 @@ public class Property {
     @Id
     private String propertyId;
     private String propertyTitle;
+    @Indexed
     private String city;
+    @Indexed
     private Double price;
+    @Indexed
     private String propertyType;
     private List<String> amenities;
+    @Indexed
     private String ownerId;
+    @Indexed
     private PropertyStatus status;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
