@@ -50,7 +50,7 @@ public class PropertyManagementController {
 
     @GetMapping("/my-properties")
     public ResponseEntity<ApiResponse<List<PropertyResponseDTO>>> getMyProperties() {
-        return ResponseEntity.ok(new ApiResponse<>(ApiStatus.SUCCESS, "Owner properties retrieved successfully", propertyService.getMyProperties()));
+        return ResponseEntity.ok(new ApiResponse<>(ApiStatus.SUCCESS, "Properties retrieved successfully", propertyService.getMyProperties()));
     }
 
     @PatchMapping("/{propertyId}/status")

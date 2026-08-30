@@ -4,12 +4,12 @@ import com.kbrsphere.shared.enums.ApiStatus;
 import com.kbrsphere.shared.response.ApiResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import org.springframework.security.access.AccessDeniedException;
 import java.util.List;
 import java.util.Objects;
 
@@ -26,8 +26,19 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ApiResponse<>(ApiStatus.FAILED, ex.getMessage(), null));
     }
 
+    @ExceptionHandler(PropertyNotFoundException.class)
+    public ResponseEntity<ApiResponse<String>> handlePropertyNotFoundException(PropertyNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ApiResponse<>(ApiStatus.FAILED, ex.getMessage(), null));
+    }
+
+    @ExceptionHandler(UnauthorizedPropertyAccessException.class)
+    public ResponseEntity<ApiResponse<String>> handleUnauthorizedPropertyAccessException(UnauthorizedPropertyAccessException ex) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ApiResponse<>(ApiStatus.FAILED, ex.getMessage(), null));
+    }
+
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<ApiResponse<String>> handleAccessDenied(AccessDeniedException ex) {
+
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ApiResponse<>(ApiStatus.FAILED, "You do not have permission to perform this action", null));
     }
 
@@ -52,13 +63,8 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ApiResponse<>(ApiStatus.FAILED, ex.getMessage(), null));
     }
 
-    @ExceptionHandler(PropertyNotFoundException.class)
-    public ResponseEntity<ApiResponse<?>> handlePropertyNotFoundException(PropertyNotFoundException ex) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ApiResponse<>(ApiStatus.FAILED, ex.getMessage(), null));
-    }
-
-    @ExceptionHandler(UnauthorizedPropertyAccessException.class)
-    public ResponseEntity<ApiResponse<?>> handleUnauthorizedPropertyAccessException(UnauthorizedPropertyAccessException ex) {
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ApiResponse<?>> handleIllegalArgumentException(IllegalArgumentException ex) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ApiResponse<>(ApiStatus.FAILED, ex.getMessage(), null));
     }
 

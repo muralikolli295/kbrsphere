@@ -3,23 +3,30 @@ package com.kbrsphere.property_management.service;
 import com.kbrsphere.property_management.dto.*;
 import com.kbrsphere.property_management.model.Property;
 import com.kbrsphere.property_management.repository.PropertyRepository;
+import com.kbrsphere.shared.exception.BadRequestException;
 import com.kbrsphere.shared.exception.PropertyNotFoundException;
 import com.kbrsphere.shared.exception.UnauthorizedPropertyAccessException;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @Service
 public class PropertyManagementServiceImpl implements PropertyManagementService {
 
     private final PropertyRepository propertyRepository;
+    private final MongoTemplate mongoTemplate;
 
-    public PropertyManagementServiceImpl(PropertyRepository propertyRepository) {
+    public PropertyManagementServiceImpl(PropertyRepository propertyRepository, MongoTemplate mongoTemplate) {
         this.propertyRepository = propertyRepository;
+        this.mongoTemplate = mongoTemplate;
     }
 
     private String getCurrentUserId() {
@@ -132,9 +139,54 @@ public class PropertyManagementServiceImpl implements PropertyManagementService 
 
     @Override
     public List<PropertyResponseDTO> searchProperties(String city, String propertyType, Double minPrice, Double maxPrice, PropertyStatus status) {
-        List<Property> properties = propertyRepository.findAll();
 
-        return properties.stream().filter(property -> city == null || property.getCity().equalsIgnoreCase(city)).filter(property -> propertyType == null || property.getPropertyType().equalsIgnoreCase(propertyType)).filter(property -> minPrice == null || property.getPrice() >= minPrice).filter(property -> maxPrice == null || property.getPrice() <= maxPrice).filter(property -> status == null || property.getStatus() == status).map(this::convertToResponse).collect(Collectors.toList());
+        // Validate price range
+        if (minPrice != null && minPrice < 0) {
+            throw new BadRequestException("Minimum price cannot be negative");
+        }
+
+        if (maxPrice != null && maxPrice < 0) {
+            throw new BadRequestException("Maximum price cannot be negative");
+        }
+
+        if (minPrice != null && maxPrice != null && minPrice > maxPrice) {
+            throw new BadRequestException("Minimum price cannot be greater than maximum price");
+        }
+
+        Query query = new Query();
+
+        // City
+        if (city != null && !city.isBlank()) {
+            query.addCriteria(Criteria.where("city").regex("^" + Pattern.quote(city.trim()) + "$", "i"));
+        }
+
+        // Property Type
+        if (propertyType != null && !propertyType.isBlank()) {
+            query.addCriteria(Criteria.where("propertyType").regex("^" + Pattern.quote(propertyType.trim()) + "$", "i"));
+        }
+
+        // Price
+        if (minPrice != null || maxPrice != null) {
+            Criteria priceCriteria = Criteria.where("price");
+
+            if (minPrice != null) {
+                priceCriteria.gte(minPrice);
+            }
+
+            if (maxPrice != null) {
+                priceCriteria.lte(maxPrice);
+            }
+            query.addCriteria(priceCriteria);
+        }
+
+        // Status
+        if (status != null) {
+            query.addCriteria(Criteria.where("status").is(status));
+        }
+
+        List<Property> properties = mongoTemplate.find(query, Property.class);
+
+        return properties.stream().map(this::convertToResponse).collect(Collectors.toList());
     }
 
     private PropertyResponseDTO convertToResponse(Property property) {
